@@ -20,5 +20,6 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^index/', 'app1.views.index'),
+    url(r'^app1/index', 'app1.views.index', name='app1'),
+    url(r'^app1/orderdata', 'app1.views.getOrderData', name='getOrderData'),
 ]
