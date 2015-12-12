@@ -10,6 +10,16 @@ def index (request):
     return render_to_response ('app1/predicttoday.html', {'menu':menu},
                                context_instance = RequestContext (request))
 
+def predictOrder (request):
+    menu = ['o1', 'o2', 'o3']
+    return render_to_response ('app1/predicttoday.html', {'menu':menu},
+                               context_instance = RequestContext (request))
+
+def statisticOrder (request):
+    menu = ['o1', 'o2', 'o3']
+    return render_to_response ('app1/statistic.html', {'menu':menu},
+                               context_instance = RequestContext (request))
+
 def getOrderData (request):
     response_data = {}
     response_data['categories'] = []
@@ -17,9 +27,13 @@ def getOrderData (request):
     for x in range(48):
         response_data['categories'].append (5)
         response_data['values'].append (6)
-    print (response_data['categories'])
-  
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-#    response_data['categories'] = ['111', '222', '333', '444', '555', '666']
-#    response_data['values'] = [5, 6, 3, 4, 7, 22]
+def getStatisticData (request):
+    response_data = {}
+    response_data['dates'] = []
+    response_data['values'] = []
+    for x in range(7):
+        response_data['dates'].append (5)
+        response_data['values'].append (6)
     return HttpResponse(json.dumps(response_data), content_type="application/json")
