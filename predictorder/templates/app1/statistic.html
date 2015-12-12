@@ -31,7 +31,7 @@
                 $.ajaxSettings.async = false;  
                   
                 // 加载数据  
-                $.getJSON("{% url 'getStatisticData' %}", function (json) {  
+                $.getJSON("{% url 'getStatisticData'%}?dashid={{dashid}}", function (json) {  
 		    dates = json.dates;
                     values = json.values;
                 });  

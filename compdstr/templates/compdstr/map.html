@@ -1,0 +1,144 @@
+{% load staticfiles %}
+
+<body>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ 		<script src="{% static 'js/esl.js'%}"></script>
+        <script src="{% static 'js/echarts.js' %}"></script>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GX8f5GWjiWRcknfgKguD5SF3"></script>
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="height:480px; width:auto;"></div>
+<!-- ECharts单文件引入 -->
+
+
+<script type="text/javascript">
+// 路径配置
+(function () {
+    require.config({
+        paths: {
+            echarts: '{% static 'doc/example/www/js' %}'
+        },
+        packages: [
+            {
+                name: 'BMap',
+                location: '{% static 'js/src' %}',
+                main: 'main'
+            }
+        ]
+    });
+
+    require(
+    [
+        'echarts',
+        'BMap',
+        'echarts/chart/map'
+    ],
+    function (echarts, BMapExtension) {
+        var BMapExt = new BMapExtension($('#main')[0], BMap, echarts,{
+            enableMapClick: false
+        });
+        var map = BMapExt.getMap();
+        var container = BMapExt.getEchartsContainer();
+
+        var startPoint = {
+            x: 121.4648,
+            y: 31.2891
+        };
+        var point = new BMap.Point(startPoint.x, startPoint.y);
+        map.centerAndZoom(point, 18);
+        map.enableScrollWheelZoom(true);
+        // 地图自定义样式
+	//var position = [];
+	//var values = [];
+	
+	// 同步执行  
+	//$.ajaxSettings.async = false;  
+	  
+	// 加载数据  
+	//$.getJSON('', function (json) {  
+	//    position = json.dates;
+	//    values = json.values;
+	//});  
+        
+
+        option = {
+            color: ['gold','aqua','lime'],
+            title : {
+                text: '订单分布',
+                x:'center',
+                textStyle : {
+                    color: '#fff'
+                }
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: function (v) {
+                    return v[1].replace(':', ' > ');
+                }
+            },
+            toolbox: {
+                show : true,
+                orient : 'vertical',
+                x: 'right',
+                y: 'center',
+                feature : {
+                    mark : {show: true},
+                    dataView : {show: true, readOnly: false},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            dataRange: {
+                min : 0,
+                max : 100,
+                x: 'right',
+                calculable : true,
+                color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
+                textStyle:{
+                    color:'#fff'
+                }
+            },
+            series : [
+                {
+                    name:'北京',
+                    type:'map',
+                    mapType: 'none',
+                    data:[],
+                    geoCoord: {
+                        '上海': [121.4648,31.2891],
+                        '大连': [122.2229,39.4409],
+                    },
+
+                    markPoint : {
+                        symbol:'emptyCircle',
+                        symbolSize : function (v){
+                            return 10 + v/10
+                        },
+                        effect : {
+                            show: true,
+                            shadowBlur : 0
+                        },
+                        itemStyle:{
+                            normal:{
+                                label:{show:false}
+                            }
+                        },
+                        data : [
+                            {name:'上海',value:95},
+                            {name:'大连',value:80},
+                        ]
+                    }
+
+                },
+            ]
+        };
+
+        var myChart = BMapExt.initECharts(container);
+        BMapExt.setOption(option);
+    }
+);
+})();
+
+</script>
+</body>
+

@@ -9,6 +9,10 @@
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -85,20 +89,20 @@
           <div class="container-fluid">
             <div class="row">
               {% block up %}
-              <h1> up </h1>
+              <h1>  </h1>
               {% endblock %}
               <div class="col-md-2">
                 {% block left %}
-                <h1> left </h1>
+                <h1>  </h1>
                 {% endblock %}
               </div>
               <div class="col-md-10">
                 {% block right %}
-                <h1> right </h1> 
+                <h1>  </h1> 
                 {% endblock %}
               </div>
               {% block down %}
-              <h1> down </h1>
+              <h1>  </h1>
               {% endblock %}
             </div>
 
@@ -108,9 +112,5 @@
       
     </div>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   </body>
 </html>

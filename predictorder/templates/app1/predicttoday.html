@@ -28,7 +28,7 @@
         var categories = [];
         var values = [];
         $.ajaxSettings.async = false;
-                ($).getJSON("{% url 'getOrderData' %}", function (json) {  
+                ($).getJSON("{% url 'getOrderData' %}?dashid={{dashid}}", function (json) {  
                     categories = json.categories;  
                     values = json.values;  
                 }); 

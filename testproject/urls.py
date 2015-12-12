@@ -20,9 +20,10 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^predictorder/index', 'predictorder.views.index', name='predictorder'),
+    url(r'^predictorder/index', 'predictorder.views.index', name='predictorderindex'),
     url(r'^predictorder/predictorder', 'predictorder.views.predictOrder', name='predictOrder'),
     url(r'^predictorder/statisticorder', 'predictorder.views.statisticOrder', name='statisticOrder'),
     url(r'^predictorder/orderdata', 'predictorder.views.getOrderData', name='getOrderData'),
     url(r'^predictorder/statisticdata', 'predictorder.views.getStatisticData', name='getStatisticData'),
+    url(r'^compdstr/index', 'compdstr.views.index', name='compdstrindex'),
 ]

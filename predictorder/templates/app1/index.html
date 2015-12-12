@@ -1,8 +1,8 @@
 {% extends 'index.html' %}
 {% block left %}
 <ul class="nav nav-stacked nav-pills" id="navlist">
-  {% for v in menu %}
-	<li {% if forloop.first %} class="active" {% endif %}onclick=changeStatus('{{v}}') id='{{v}}'>
+  {% for k, v in menu.items %}
+	<li {% if forloop.first %} class="active" {% endif %}onclick=changeStatus('{{v}}', '{{k}}') id='{{v}}'>
 		<a href="#">{{ v }}</a>
 	</li>
   {% endfor %}
@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 
-function changeStatus (arg) {
+function changeStatus (arg, arg2) {
 	var a = document.getElementById ("navlist").getElementsByTagName ("li");
 	for (var i = 0; i < a.length; i++) {
 		a[i].className="";
