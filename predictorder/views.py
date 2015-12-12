@@ -85,7 +85,7 @@ def getMenu (shopid):
     dic = compviews.QueryMenu (shopid)
     ans = collections.OrderedDict ()
     for k, v in dic.items ():
-        ans[k] = v
+        ans[str(k)] = v
     return ans
 
 

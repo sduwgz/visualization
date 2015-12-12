@@ -2,7 +2,7 @@
 {% block left %}
 <ul class="nav nav-stacked nav-pills" id="navlist">
   {% for k, v in menu.items %}
-	<li {% if forloop.first %} class="active" {% endif %}onclick=changeStatus('{{v}}', '{{k}}') id='{{v}}'>
+	<li id="{{v}}" {% if k == dashid %} class="active" {% endif %}onclick=changeStatus("{{v}}","{{k}}") >
 		<a href="#">{{ v }}</a>
 	</li>
   {% endfor %}
@@ -17,6 +17,7 @@ function changeStatus (arg, arg2) {
 	};
 	document.getElementById (arg).className="active";
 	// body...
+  window.location.href='{% url 'statisticOrder' %}?dashid=' + arg2
 }
 </script>
 
