@@ -1,5 +1,29 @@
 {% extends 'app1/index.html' %}
 
+{% block left %}
+<ul class="nav nav-stacked nav-pills" id="navlist">
+  {% for k, v in menu.items %}
+	<li id="{{v}}" {% if k == dashid %} class="active" {% endif %}onclick=changeStatus("{{v}}","{{k}}") >
+		<a href="#">{{ v }}</a>
+	</li>
+  {% endfor %}
+</ul>
+
+<script type="text/javascript">
+
+function changeStatus (arg, arg2) {
+	var a = document.getElementById ("navlist").getElementsByTagName ("li");
+	for (var i = 0; i < a.length; i++) {
+		a[i].className="";
+	};
+	document.getElementById (arg).className="active";
+	// body...
+  window.location.href='{% url 'predictOrder' %}?dashid=' + arg2
+}
+</script>
+
+{% endblock %}
+
 {% block rightleft%}
 
 <body>
