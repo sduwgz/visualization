@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <title>Bootstrap 101 Template</title>
+    <title>ele个人中心</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -30,49 +30,22 @@
               
               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-              </button> <a class="navbar-brand" href="#">   System    </a>
+              </button> <a class="navbar-brand" href="#">   个人中心    </a>
             </div>
             
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav">
                 <li {% if 'Document' == Choose %} class="active" {% endif %}>
-                  <a href="#">    app1  </a>
+                  <a href="{% url 'statisticOrder' %}">    预测  </a>
                 </li>
                 <li>
-                  <a href="#">    app2  </a>
+                  <a href="{% url 'compdstrindex' %}">    变化  </a>
                 </li>
                 <li>
-                  <a href="#">    app3  </a>
+                  <a href="{% url 'analyindex' %}">    挖掘  </a>
                 </li>
                 <li>
-                  <a href="#">    app4  </a>
-                </li>
-                <li>
-                  <a href="#">Link</a>
-                </li>
-                <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a href="#">Action</a>
-                    </li>
-                    <li>
-                      <a href="#">Another action</a>
-                    </li>
-                    <li>
-                      <a href="#">Something else here</a>
-                    </li>
-                    <li class="divider">
-                    </li>
-                    <li>
-                      <a href="#">Separated link</a>
-                    </li>
-                    <li class="divider">
-                    </li>
-                    <li>
-                      <a href="#">One more separated link</a>
-                    </li>
-                  </ul>
+                  <a href="#">    评估  </a>
                 </li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
@@ -88,6 +61,7 @@
           </nav>
           <div class="container-fluid">
             <div class="row">
+              {% block full%}
               {% block up %}
               <h1>  </h1>
               {% endblock %}
@@ -103,6 +77,7 @@
               </div>
               {% block down %}
               <h1>  </h1>
+              {% endblock %}
               {% endblock %}
             </div>
 

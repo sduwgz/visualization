@@ -26,4 +26,9 @@ urlpatterns = [
     url(r'^predictorder/orderdata', 'predictorder.views.getOrderData', name='getOrderData'),
     url(r'^predictorder/statisticdata', 'predictorder.views.getStatisticData', name='getStatisticData'),
     url(r'^compdstr/index', 'compdstr.views.index', name='compdstrindex'),
+    url(r'^compdstr/getshopdata', 'compdstr.views.getShopData', name='getShopData'),
+    url(r'^compdstr/getweiddata', 'compdstr.views.getWeidData', name='getWeidData'),
+    url(r'^compdstr/changedata', 'compdstr.views.changeData', name='changeData'),
+    url(r'^compdstr/getchangedata', 'compdstr.views.getChangeData', name='getChangeData'),
+    url(r'^analy/index', 'analy.views.index', name='analyindex'),
 ]

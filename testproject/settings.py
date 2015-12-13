@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'predictorder',
-    'compdstr'
+    'compdstr',
+    'tools',
+    'analy'
 ]
 
 MIDDLEWARE_CLASSES = [

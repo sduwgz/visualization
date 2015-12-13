@@ -1,130 +1,101 @@
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.template import RequestContext
-import json
-
-from pyes import *
-import time
-import datetime
-from numpy import *  
-import matplotlib.pyplot as plt  
 # Create your views here.
 
+from tools import views as toolsviews
+from predictorder import views as previews
+import time
+import datetime
+import json
+import collections
+from numpy import *
 
 def index (request):
-    menu = ['o1', 'o2', 'o3']
+    menu = ['商圈1', '商圈2','商圈3','商圈4']
     return render_to_response ('compdstr/index.html', {'menu':menu},
                                context_instance = RequestContext (request))
 
-conn_restaurant = ES('http://115.159.157.35:9200/hackathon/restaurant')
+def changeData (request):
+    menu = ['商圈1', '商圈2','商圈3','商圈4']
+    return render_to_response ('compdstr/change.html', {'menu':menu},
+                               context_instance = RequestContext (request))
 
-conn_order = ES('http://115.159.157.35:9200/hackathon/order')
+def getChangeData (request):
+    shopid = request.session.get ('shopid', 256365)
+    menu = ['商圈1', '商圈2','商圈3','商圈4']
+    now = previews.nnow()
+    before = (now - datetime.timedelta(days=7))
+    res = toolsviews.QueryRestaurantOrders(shopid,before,now)
+    data = collections.OrderedDict()
+    for i in range (7):
+        t = (now - datetime.timedelta(days=7-i)).strftime("%m-%d")
+        data[t] = 0
 
-conn_menu = ES('http://115.159.157.35:9200/hackathon/menu')
+    for x in res:
+        timeStamp = x.order_time
+        t = timeStamp.strftime("%m-%d")
+        for v in x.foods:
+            data[t] = data.get (t, 0) + 1
 
-def _QueryMenu_init():
-    q = MatchAllQuery()
-    results = conn_menu.search(q, 'hackathon', 'menu')
+    response_data = {}
+    response_data['dates'] = []
+    response_data['values'] = []
+    for k, v in data.items():
+        response_data['dates'].append (k)
+        response_data['values'].append (v)
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-    res = [];
-    for r in results:
-        res.append(r)
-    return res
 
-restaurant_menus = {}
-for r in _QueryMenu_init():
-    for r1 in r['menu']:
-        for r2 in r1['foods']:
-            restaurant_id = r2['restaurant_id']
-            food_id = r2['food_id']
-            food_name = r2['food_name']
-            if restaurant_id in restaurant_menus:
-                restaurant_menus[restaurant_id].update({food_id: food_name})
-            else:
-                restaurant_menus.update({restaurant_id:{food_id: food_name}})
+def getWeidData (request):
+    shopid = request.GET.get ('shopid', 256365)
+    now = previews.nnow()
+    res1 = toolsviews.QueryRestaurantOrders(shopid, now-datetime.timedelta(days=7), now)
+    data1 = []
+    for x in res1:
+        data1.append ([x.longitude, x.latitude])
+    cent, clus = toolsviews.KMeans (mat(data1), 5)
 
-def QueryMenu(restaurant_id):
-    return restaurant_menus[restaurant_id]
+    geocoor1 = {}
+    for i, x in enumerate(cent):
+        print (x)
+        geocoor1['商圈'+str(i)] = [x[0], x[1]]
+    weid = []
 
-def QueryRestaurantOrders(restaurant_id, time_start, time_end):
-    start = str(time_start)
-    print(start)
-    end = str(time_end)
-    print(end)
-    q = TermQuery("restaurant_id", str(restaurant_id))
-    results = conn_order.search(q, 'hackathon', 'order')
+    for i in range (len(cent)):
+        weid.append ({'name':'商圈' + str(i), 'value': 0})
+    for x in clus:
+        t = int(x[0, 0])
+        weid[t]['value'] += 1
+    for i in range (len(cent)):
+        weid[i]['value'] /= len (clus)
+    al = {'a':geocoor1, 'b': weid}
+    return HttpResponse(json.dumps(weid), content_type="application/json")
 
-    res = [];
-    start = time.mktime(time_start.timetuple())
-    end = time.mktime(time_end.timetuple())
-    for r in results:
-        timeStamp = datetime.datetime.strptime(r[u'created_at'],'%Y-%m-%d %H:%M:%S') 
-        mkTimeStamp = time.mktime(timeStamp.timetuple())
-        if mkTimeStamp >= start and mkTimeStamp < end:
-            res.append(r)
-    return res
+def getShopData (request):
+    shopid = request.GET.get ('shopid', 256365)
+    now = previews.nnow()
+    res1 = toolsviews.QueryRestaurantOrders(shopid, now-datetime.timedelta(days=7), now)
+    data1 = []
+    for x in res1:
+        data1.append ([x.longitude, x.latitude])
+    cent, clus = toolsviews.KMeans (mat(data1), 5)
 
-# calculate Euclidean distance  
-def euclDistance(vector1, vector2):  
-    return sqrt(sum(power(vector2 - vector1, 2)))  
-  
-# init centroids with random samples  
-def initCentroids(dataSet, k):  
-    numSamples, dim = dataSet.shape  
-    centroids = zeros((k, dim))  
-    for i in range(k):  
-        index = int(random.uniform(0, numSamples))  
-        centroids[i, :] = dataSet[index, :]  
-    return centroids  
-  
-def KMeans(dataSet, k):  
-    numSamples = dataSet.shape[0]  
-    clusterAssment = mat(zeros((numSamples, 2)))  
-    clusterChanged = True  
-  
-    ## step 1: init centroids  
-    centroids = initCentroids(dataSet, k)  
-  
-    while clusterChanged:  
-        clusterChanged = False  
-        ## for each sample  
-        for i in range(numSamples):  
-            minDist  = -1 
-            minIndex = 0  
-            ## for each centroid  
-            ## step 2: find the centroid who is closest  
-            for j in range(k):  
-                distance = euclDistance(centroids[j, :], dataSet[i, :])  
-                if minDist < 0 or distance < minDist:  
-                    minDist  = distance  
-                    minIndex = j  
-              
-            ## step 3: update its cluster  
-            if clusterAssment[i, 0] != minIndex:  
-                clusterChanged = True  
-                clusterAssment[i, :] = minIndex, minDist**2  
-  
-        ## step 4: update centroids  
-        for j in range(k):  
-            pointsInCluster = dataSet[nonzero(clusterAssment[:, 0].A == j)[0]]  
-            centroids[j, :] = mean(pointsInCluster, axis = 0)  
-  
-    return centroids, clusterAssment  
-  
-def showCluster(dataSet, k, centroids, clusterAssment):  
-    numSamples, dim = dataSet.shape  
-    if dim != 2:  
-        return 1  
-  
-    mark = ['or', 'ob', 'og', 'ok', '^r', '+r', 'sr', 'dr', '<r', 'pr']  
-    if k > len(mark):  
-        return 1  
-    for i in range(numSamples):  
-        markIndex = int(clusterAssment[i, 0])  
-        plt.plot(dataSet[i, 0], dataSet[i, 1], mark[markIndex])  
-  
-    mark = ['Dr', 'Db', 'Dg', 'Dk', '^b', '+b', 'sb', 'db', '<b', 'pb']  
-    for i in range(k):  
-        plt.plot(centroids[i, 0], centroids[i, 1], mark[i], markersize = 12)  
-  
-    plt.show() 
+    geocoor1 = {}
+    for i, x in enumerate(cent):
+        print (x)
+        geocoor1['商圈'+str(i)] = [x[0], x[1]]
+    weid = []
+
+    for i in range (len(cent)):
+        weid.append ({'name':'商圈' + str(i), 'value': 0})
+    for x in clus:
+        t = int(x[0, 0])
+        weid[t]['value'] += 1
+    for i in range (len(cent)):
+        weid[i]['value'] /= len (clus)
+    al = {'a':geocoor1, 'b': weid}
+    print (geocoor1)
+    return HttpResponse(json.dumps(geocoor1), content_type="application/json")
+
+

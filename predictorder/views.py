@@ -9,7 +9,7 @@ import collections
 
 # Create your views here.
 
-from compdstr import views as compviews
+from tools import views as compviews
 
 def index (request):
     shopid = request.GET.get ('shopid', 256365)
@@ -54,6 +54,8 @@ def getOrderData (request):
     nowdash = int(request.GET['dashid'])
     menu = getMenu (shopid)
     now = nnow()
+    if request.GET.get ('tomorrow', '0') == '1':
+        now = now + datetime.timedelta(days=1)
     before = (now - datetime.timedelta(days=7))
     res = compviews.QueryRestaurantOrders(shopid,before,now)
     data = collections.OrderedDict()
@@ -62,18 +64,16 @@ def getOrderData (request):
         t = (timeStamp + datetime.timedelta(minutes=30*i)).strftime("%H:%M")
         data[t] = 0
     for x in res:
-        timeStamp = datetime.datetime.strptime(x['created_at'],'%Y-%m-%d %H:%M:%S')
+        timeStamp = x.order_time
         if timeStamp.strftime('%m%d') == before.strftime('%m%d'):
             t = timeStamp.strftime('%H') + ':'
             if int(timeStamp.strftime('%M')) >= 30:
                 t += '30'
             else:
                 t += '00'
-            group = x['detail']['group']
-            for va in group:
-                for v in va:
-                    if v['id'] == nowdash:
-                        data[t] = data.get (t, 0) + 1
+            for v in x.foods:
+                if v.food_id == nowdash:
+                    data[t] = data.get (t, 0) + 1
 
     response_data = {}
     response_data['categories'] = []
@@ -96,13 +96,11 @@ def getStatisticData (request):
         data[t] = 0
 
     for x in res:
-        timeStamp = datetime.datetime.strptime(x['created_at'],'%Y-%m-%d %H:%M:%S')
+        timeStamp = x.order_time
         t = timeStamp.strftime("%m-%d")
-        group = x['detail']['group']
-        for va in group:
-            for v in va:
-                if v['id'] == nowdash:
-                    data[t] = data.get (t, 0) + 1
+        for v in x.foods:
+            if v.food_id == nowdash:
+                data[t] = data.get (t, 0) + 1
 
     response_data = {}
     response_data['dates'] = []
@@ -117,10 +115,10 @@ def nnow ():
     return datetime.datetime.strptime("2015-12-06 01:00:00",'%Y-%m-%d %H:%M:%S')
 
 def getMenu (shopid):
-    dic = compviews.QueryMenu (shopid)
+    dic = compviews.QueryMenu (shopid)[::-1]
     ans = collections.OrderedDict ()
-    for k, v in dic.items ():
-        ans[str(k)] = v
+    for x in dic:
+        ans[str(x.food_id)] = x.food_name
     return ans
 
 

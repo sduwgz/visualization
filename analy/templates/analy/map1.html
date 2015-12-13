@@ -10,7 +10,6 @@
 <div id="main" style="height:480px; width:auto;"></div>
 <!-- ECharts单文件引入 -->
 
-
 <script type="text/javascript">
 // 路径配置
 (function () {
@@ -48,18 +47,22 @@
         map.centerAndZoom(point, 18);
         map.enableScrollWheelZoom(true);
         // 地图自定义样式
-	//var position = {};
-	//var values = [];
+	var position = [];
+	var values = [];
 	
 	// 同步执行  
-	//$.ajaxSettings.async = false;  
+	$.ajaxSettings.async = false;  
 	  
 	// 加载数据  
-	//$.getJSON('{% url 'getShopData' %}', function (json) {  
-	//    position = json.a;
-	//    values = json.b;
-	//});  
+	$.getJSON('{% url 'getWeidData' %}', function (json) {  
+	    //position = json.a;
+	    values = json;
+	});  
         
+	$.getJSON('{% url 'getShopData' %}', function (json) {  
+	    position = json;
+	    //values = json;
+	});  
 
         option = {
             color: ['gold','aqua','lime'],
@@ -104,29 +107,37 @@
                     type:'map',
                     mapType: 'none',
                     data:[],
-                    geoCoord:{
-                        'dfsf':[121.4648, 31.2891], 
+                    //geoCoord: position,
+                    geoCoord: {
+                        '商圈0': [121.4648,31.2891],
+                        '商圈1': [121.4658,31.2891],
+                        '商圈2': [121.4645,31.2881],
+                        '商圈3': [121.4640,31.2881],
+                        '商圈4': [121.4648,31.2891],
                     },
-                    //geocoord: position,
 
-                    markpoint : {
-                        symbol:'emptycircle',
-                        symbolsize : function (v){
-                            return v*300
+                    markPoint : {
+                        symbol:'emptyCircle',
+                        symbolSize : function (v){
+                            return 20 + v/10
                         },
                         effect : {
                             show: true,
-                            shadowblur : 0
+                            shadowBlur : 10
                         },
                         itemStyle:{
                             normal:{
                                 label:{show:false}
                             }
                         },
-                        data:[
-                            {'name' : 'dfsf', 'value' : 40}, 
-                        ], 
-                        //data : values, 
+                        //data : values
+                        data : [
+                            {name:'商圈0',value:95},
+                            {name:'商圈1',value:80},
+                            {name:'商圈2',value:95},
+                            {name:'商圈3',value:95},
+                            {name:'商圈4',value:80},
+                        ]
                     }
 
                 },
